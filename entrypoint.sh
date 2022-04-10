@@ -5,7 +5,6 @@ CMD=$1
 ARG1=$2
 if [[ $CMD == "aws" ]]; then
 	shift 1
-	echo "ARGS: "$@
 	aws $@
 elif [[ $CMD == "console" && $ARG1 == "bash" ]]; then
 	bash
