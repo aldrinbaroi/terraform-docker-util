@@ -1,0 +1,51 @@
+#!/bin/bash
+
+terraform_execute() {
+	echo ""
+	source terraform.conf 
+	local CMD=$1
+	local INTERACTIVE=""
+	case $CMD in
+		console)
+			INTERACTIVE="-it"
+			;;
+	esac
+	[[ ! -f $PLUGIN_CACHE_DIR_HOST ]] && mkdir -p $PLUGIN_CACHE_DIR_HOST
+	[[ ! -f $WORK_DIR_HOST ]] && mkdir -p $WORK_DIR_HOST
+	echo ""
+	docker run \
+		$INTERACTIVE \
+		--rm \
+		-e TF_CLI_CONFIG_FILE=$TF_CLI_CONFIG_FILE \
+		-v $CONF_DIR_HOST/$TF_CLI_CONFIG_FILE:$CONF_DIR_CONTAINER/$TF_CLI_CONFIG_FILE \
+		-v $PLUGIN_CACHE_DIR_HOST:$PLUGIN_CACHE_DIR_CONTAINER:rw \
+		-v $WORK_DIR_HOST:$WORK_DIR_CONTAINER:rw \
+		-v /var/run/docker.sock:/var/run/docker.sock \
+		-v $(pwd)/.aws:/root/.aws:ro \
+		$TERRAFORM_IMAGE $@
+	echo "" 
+}
+
+CMD=$1
+shift 1
+ARGS="$@"
+
+[[ -z ${CMD// /} || $CMD == "help" ]] && CMD="-help" 
+
+case $CMD in
+	# Main commands
+	init|validate|plan|apply|destory)			;&
+	# All other commans
+	console|fmt|force-unlock|get|graph|import|login)	;&
+	logout|output|providers|refresh|show|state|taint)	;&
+	test|untaint|version|workspace|-help|-version)		;&
+	aws)
+		terraform_execute $CMD $ARGS
+		;;
+	*)
+		echo "Invalid request: [$CMD]"
+		exit 1
+		;;
+esac
+
+#::END::

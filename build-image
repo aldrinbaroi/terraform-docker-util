@@ -1,0 +1,15 @@
+#!/bin/bash
+
+source terraform-build.conf
+echo SOURCE_IMAGE=$SOURCE_IMAGE
+echo TARGET_IMAGE=$TARGET_IMAGE
+
+docker build \
+	-t $TARGET_IMAGE \
+	-t $TARGET_IMAGE_LATEST \
+	--build-arg SOURCE_IMAGE="$SOURCE_IMAGE" \
+	.
+(( $? )) && echo "Failed to build image." && exit 1
+echo "Successfully build $TARGET_IMAGE image."
+
+#::END::
