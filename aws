@@ -36,21 +36,19 @@ function iniget() {
 }
 
 PROFILE=default
-echo "PROFILE=$PROFILE"
 AWS_ACCESS_KEY_ID=$(iniget /root/.aws/credentials $PROFILE aws_access_key_id)
 AWS_SECRET_ACCESS_KEY=$(iniget /root/.aws/credentials $PROFILE aws_secret_access_key)
-AWS_DEFAULT_REGION=$(iniget /root/.aws/config $PROFILE region)
+AWS_REGION=$(iniget /root/.aws/config $PROFILE region)
 cat << EOF
 =================================================
-AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION
+PROFILE=$PROFILE
+AWS_REGION=$AWS_REGION
 =================================================
 EOF
 docker run --rm \
 	-e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
 	-e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
-	-e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION \
+	-e AWS_REGION=$AWS_REGION \
 	amazon/aws-cli $@ 
 
 #::END::
