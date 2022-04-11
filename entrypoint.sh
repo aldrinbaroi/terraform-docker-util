@@ -1,6 +1,5 @@
 #!/bin/bash
 
-export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/go/bin
 CMD=$1
 ARG1=$2
 if [[ $CMD == "aws" ]]; then
@@ -9,6 +8,10 @@ if [[ $CMD == "aws" ]]; then
 elif [[ $CMD == "console" && $ARG1 == "bash" ]]; then
 	bash
 else
+	echo $(pwd)
+	AWS_ACCESS_KEY_ID=$(iniget /root/.aws/credentials $PROFILE aws_access_key_id)
+	AWS_SECRET_ACCESS_KEY=$(iniget /root/.aws/credentials $PROFILE aws_secret_access_key)
+	AWS_REGION=$(iniget /root/.aws/config $PROFILE region)
 	terraform $@
 fi
 
