@@ -1,0 +1,4 @@
+plugin_cache_dir   = "/var/terraform/plugin-cache"
+disable_checkpoint = true
+
+
