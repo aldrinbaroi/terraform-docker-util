@@ -1,4 +1,0 @@
-plugin_cache_dir   = "/root/plugin-cache"
-disable_checkpoint = true
-
-
