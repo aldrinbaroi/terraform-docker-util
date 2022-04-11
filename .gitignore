@@ -3,7 +3,6 @@ terraform-work
 plugin-cache
 *.tf
 .terraform.lock.hcl
-terraform-config
 terraform-data
 terraform-log
 terraform-plugin-cache
