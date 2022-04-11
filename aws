@@ -1,50 +1,17 @@
 #!/bin/bash
 
-function iniget() {
-  if [[ $# -lt 2 || ! -f $1 ]]; then
-    echo "usage: iniget <file> [--list|<section> [key]]"
-    return 1
-  fi
-  local inifile=$1
-
-  if [ "$2" == "--list" ]; then
-    for section in $(cat $inifile | grep "\[" | sed -e 's#\[##g' | sed -e 's#\]##g'); do
-      echo $section
-    done
-    return 0
-  fi
-
-  local section=$2
-  local key
-  [ $# -eq 3 ] && key=$3
-
-  # https://stackoverflow.com/questions/49399984/parsing-ini-file-in-bash
-  # This awk line turns ini sections => [section-name]key=value
-  local lines=$(awk '/\[/{prefix=$0; next} $1{print prefix $0}' $inifile)
-  for line in $lines; do
-    if [[ "$line" = \[$section\]* ]]; then
-      local keyval=$(echo $line | sed -e "s/^\[$section\]//")
-      if [[ -z "$key" ]]; then
-        echo $keyval
-      else          
-        if [[ "$keyval" = $key=* ]]; then
-          echo $(echo $keyval | sed -e "s/^$key=//")
-        fi
-      fi
-    fi
-  done
-}
-
 PROFILE=default
 AWS_ACCESS_KEY_ID=$(iniget /root/.aws/credentials $PROFILE aws_access_key_id)
 AWS_SECRET_ACCESS_KEY=$(iniget /root/.aws/credentials $PROFILE aws_secret_access_key)
 AWS_REGION=$(iniget /root/.aws/config $PROFILE region)
-cat << EOF
+
+cat << INFO
 =================================================
 PROFILE=$PROFILE
 AWS_REGION=$AWS_REGION
 =================================================
-EOF
+INFO
+
 docker run --rm \
 	-e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
 	-e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
