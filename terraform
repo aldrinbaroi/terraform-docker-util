@@ -6,9 +6,7 @@ terraform_execute() {
 	local CMD=$1
 	local INTERACTIVE=""
 	case $CMD in
-		console)
-			INTERACTIVE="-it"
-			;;
+		console) INTERACTIVE="-it" ;;
 	esac
 	DATA_DIR=$WORK_DIR/tfdata/data
 	PLUGIN_CACHE_DIR=$WORK_DIR/tfdata/plugin-cache
@@ -34,7 +32,6 @@ terraform_execute() {
 		-v $AWS_CONFIG_DIR:/.aws:ro \
 		-v /var/run/docker.sock:/var/run/docker.sock \
 		$TERRAFORM_IMAGE $@
-		#-v $DATA_DIR/.terraform:/root/.terraform \
 	echo "" 
 }
 
