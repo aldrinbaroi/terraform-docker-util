@@ -24,7 +24,7 @@ terraform_execute() {
 		$INTERACTIVE \
 		--rm \
 		-e TF_CLI_CONFIG_FILE=/root/terraform.tfrc \
-		-e TF_DATE_DIR=/root/data \
+		-e TF_DATA_DIR=/root/data \
 		-e TF_LOG=$LOG_LEVEL \
 		-e TF_LOG_PATH=/root/log/terraform.log \
 		-v $WORK_DIR:/root/work:rw \
