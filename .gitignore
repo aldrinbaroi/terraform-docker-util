@@ -7,3 +7,7 @@ terraform-data
 terraform-log
 terraform-plugin-cache
 *tfstate*
+.bash_history
+.terraform
+terraform.log
+tfdata
