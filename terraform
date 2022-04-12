@@ -20,6 +20,7 @@ terraform_execute() {
 	docker run \
 		$INTERACTIVE \
 		--rm \
+		-e AWS_PROFILE=$AWS_PROFILE \
 		-e TF_CLI_CONFIG_FILE=/root/terraform.tfrc \
 		-e TF_DATA_DIR=/root/data \
 		-e TF_LOG=$LOG_LEVEL \
