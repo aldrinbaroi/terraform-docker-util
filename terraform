@@ -10,11 +10,8 @@ terraform_execute() {
 			INTERACTIVE="-it"
 			;;
 	esac
-	[[ ! -d $CONFIG_DIR ]] && \
-		echo "Config dir [$CONFIG_DIR] doesn't exist. Aborting..." && \
-		exit 1
-	[[ ! -f $CONFIG_DIR/terraform.tfrc ]] && \
-		"Config file [$CONFIG_DIR/terraform.tfrc] doesn't exist. Aborting..." && \
+	[[ ! -f terraform.tfrc ]] && \
+		"Config file [terraform.tfrc] doesn't exist. Aborting..." && \
 		exit 1
 	[[ ! -d $LOG_DIR ]] && mkdir -r $LOG_DIR
 	[[ ! -d $DATA_DIR ]] && mkdir -p $DATA_DIR
@@ -23,16 +20,13 @@ terraform_execute() {
 	docker run \
 		$INTERACTIVE \
 		--rm \
-		-e TF_DATA_DIR=/var/terraform/data \
-		-e TF_CLI_CONFIG_FILE=/var/terraform/config/terraform.tfrc \
+		-e TF_CLI_CONFIG_FILE=/root/terraform.tfrc \
 		-e TF_LOG=$LOG_LEVEL \
-		-e TF_LOG_PATH=/var/terraform/log/terraform.log \
-		-v $WORK_DIR:/var/terraform/work:rw \
-		-v $CONFIG_DIR/terraform.tfrc:/var/terraform/config/terraform.tfrc \
-		-v $PLUGIN_CACHE_DIR:/var/terraform/plugin-cache:rw \
-		-v $DATA_DIR:/var/terraform/data:rw \
-		-v $LOG_DIR:/var/terraform/log:rw \
-		-v $AWS_CONFIG_DIR:/root/.aws:ro \
+		-e TF_LOG_PATH=/root/log/terraform.log \
+		-v $WORK_DIR:/root:rw \
+		-v $LOG_DIR:/root/log:rw \
+		-v $PLUGIN_CACHE_DIR:/root/plugin-cache:rw \
+		-v $AWS_CONFIG_DIR:/.aws:ro \
 		-v /var/run/docker.sock:/var/run/docker.sock \
 		$TERRAFORM_IMAGE $@
 	echo "" 
