@@ -2,38 +2,39 @@
 
 terraform_execute() {
 	echo ""
-	source terraform.conf 
+	if [[ -f /etc/terrform.conf ]]; then
+		source terraform.conf
+	else
+		SCRIPT_DIR=$(dirname $(readlink -f $0))
+		if [[ -f $SCRIPT_DIR/terraform.conf ]]; then
+			source terraform.conf
+		else
+			echo "Unable to locate terraform.conf under /etc or in current dir [$(pwd)]."
+			echo "Aborting..."
+			exit 1
+		fi
+	fi
 	local CMD=$1
 	local INTERACTIVE=""
 	case $CMD in
 		apply|destroy|console) INTERACTIVE="-it" ;;
 	esac
 	readonly WORK_DIR=$(pwd)
-	DATA_DIR=$WORK_DIR/tfdata/data
-	PLUGIN_CACHE_DIR=$WORK_DIR/tfdata/plugin-cache
-	LOG_DIR=$WORK_DIR/tfdata/log
-	[[ ! -f terraform.tfrc ]] && \
-		echo "[terraform.tfrc] configuration file not found." && \
+	[[ ! -f .terraform.tfrc ]] && \
+		echo "[.terraform.tfrc] configuration file not found." && \
 		echo "Aborting..." && 
 		echo "" && \
 		exit 1
-	[[ ! -d $LOG_DIR ]] && mkdir -p $LOG_DIR
-	[[ ! -d $DATA_DIR ]] && mkdir -p $DATA_DIR
-	[[ ! -d $PLUGIN_CACHE_DIR ]] && mkdir -p $PLUGIN_CACHE_DIR
 	echo ""
 	docker run \
 		$INTERACTIVE \
 		--rm \
 		-e AWS_PROFILE=$AWS_PROFILE \
-		-e TF_CLI_CONFIG_FILE=/root/terraform.tfrc \
-		-e TF_DATA_DIR=/root/data \
+		-e TF_CLI_CONFIG_FILE=.terraform.tfrc \
 		-e TF_LOG=$LOG_LEVEL \
-		-e TF_LOG_PATH=/root/log/terraform.log \
-		-v $WORK_DIR/terraform.tfrc:/root/terraform.tfrc \
-		-v $WORK_DIR:/root/work:rw \
-		-v $DATA_DIR:/root/data:rw \
-		-v $LOG_DIR:/root/log:rw \
-		-v $PLUGIN_CACHE_DIR:/root/plugin-cache:rw \
+		-e TF_LOG_PATH=.terraform.log \
+		-e PLUGIN_CACHE_DIR=/root/.terraform-plugin-cache \
+		-v $WORK_DIR:/root:rw \
 		-v $AWS_CONFIG_DIR:/.aws:ro \
 		-v /var/run/docker.sock:/var/run/docker.sock \
 		$TERRAFORM_IMAGE $@
