@@ -20,12 +20,15 @@ terraform_execute() {
 		apply|destroy|console) INTERACTIVE="-it" ;;
 	esac
 	readonly WORK_DIR=$(pwd)
-	[[ ! -f .terraform.tfrc ]] && \
-		echo "[.terraform.tfrc] configuration file not found." && \
-		echo "Aborting..." && 
-		echo "" && \
-		exit 1
-	echo ""
+	if [[ ! -f .terraform.tfrc ]] ; then
+		echo "[.terraform.tfrc] configuration file not found." 
+		echo "Creating a default [.terraform.tfrc] file..."
+		cat <<- EOF > ./.terraform.tfrc
+		plugin_cache_dir   = "/root/plugin-cache"
+		disable_checkpoint = true
+		EOF
+		echo ""
+	fi
 	docker run \
 		$INTERACTIVE \
 		--rm \
