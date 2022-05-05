@@ -1,9 +1,15 @@
 #!/bin/bash
 
+echo ""
 source terraform-build.conf
 echo SOURCE_IMAGE=$SOURCE_IMAGE
 echo TARGET_IMAGE=$TARGET_IMAGE
 
+echo "Downloading [aws] client script..."
+wget -O ./aws $AWS_CLI_BASH_SCRIPT_DOWNLOAD_URL
+(( $? )) && echo "ERROR: Failed to download [aws] script." && exit 1
+
+echo "Building custom [terraform] image: $TARGET_IMAGE"
 docker build \
 	-t $TARGET_IMAGE \
 	-t $TARGET_IMAGE_LATEST \
@@ -11,5 +17,6 @@ docker build \
 	.
 (( $? )) && echo "Failed to build image." && exit 1
 echo "Successfully build $TARGET_IMAGE image."
+echo ""
 
 #::END::
