@@ -8,7 +8,10 @@ echo TARGET_IMAGE=$TARGET_IMAGE
 echo "Downloading [aws] client script..."
 wget -O ./aws $AWS_CLI_BASH_SCRIPT_DOWNLOAD_URL
 (( $? )) && echo "ERROR: Failed to download [aws] script." && exit 1
-chmod 755 ./aws
+echo "Downloading [ini-get] script..."
+wget -O ./ini-get $INI_GET_BASH_SCRIPT_DOWNLOAD_URL
+(( $? )) && echo "ERROR: Failed to download [aws] script." && exit 1
+chmod 755 ./aws ./ini-get
 
 echo "Building custom [terraform] image: $TARGET_IMAGE"
 docker build \
