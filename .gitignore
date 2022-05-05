@@ -1,4 +1,5 @@
 .aws
+aws
 terraform-work
 plugin-cache
 *.tf
