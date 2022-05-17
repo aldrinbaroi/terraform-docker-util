@@ -22,11 +22,21 @@ terraform_execute() {
 	readonly WORK_DIR=$(pwd)
 	if [[ ! -f .terraform.tfrc ]] ; then
 		echo "[.terraform.tfrc] configuration file not found." 
-		echo "Creating a default [.terraform.tfrc] file..."
-		cat <<- EOF > ./.terraform.tfrc
-		plugin_cache_dir   = "/root/plugin-cache"
-		disable_checkpoint = true
-		EOF
+		echo "[.terraform.tfrc] file is required for [terraform] to work."
+		read -p "Create basic [.terraform.tfrc] file? [y/N] " -n1 userResponse
+		echo ""
+		if [[ "${userResponse,,}" == "y" ]]; then
+			echo "Creating a default [.terraform.tfrc] file..."
+			cat <<- EOF > ./.terraform.tfrc
+			plugin_cache_dir   = "/root/plugin-cache"
+			disable_checkpoint = true
+			EOF
+		else
+			echo "Without basic [.terraform.tfrc] file [terraform] command doesn't work."
+			echo "Aborting..."
+			echo ""
+			exit 1
+		fi
 		echo ""
 	fi
 	docker run \
